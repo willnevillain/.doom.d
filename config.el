@@ -76,6 +76,9 @@
 ;; END:  Projectile
 ;;;;
 
+;;;;
+;; BEGIN: LSP
+;;;;
 (after! lsp-mode
   (setq lsp-pyls-configuration-sources ["flake8" "pycodestyle"])
   (setq lsp-pyls-plugins-flake8-enabled t)
@@ -88,6 +91,7 @@
           (typescript-mode . "typescript")
           (javascript-mode . "javascript")))
 
+  ;; This function should theoretically be redundant with the above
   (defun lsp-set-cfg ()
     (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
       (lsp--set-configuration lsp-cfg)))
@@ -95,7 +99,13 @@
 
 (after! lsp-ui
   (setq lsp-prefer-flymake :none))
+;;;;
+;; END: LSP
+;;;;
 
+;;;;
+;; BEGIN: Uncategorized
+;;;;
 (add-hook 'typescript-mode-hook 'prettier-js-mode)
 
 (defvar dub/olympus-env-dir "~/code/olympus/env")
@@ -107,7 +117,9 @@
 (setq company-idle-delay 0)
 (setq company-minimum-prefix-length 1)
 (setq company-selection-wrap-around t)
-(setq company-global-modes (append company-global-modes '(org-mode)))
 
 (setq typescript-indent-level 2)
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+;;;;
+;; END: Uncategorized
+;;;;
