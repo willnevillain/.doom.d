@@ -42,7 +42,10 @@
         "* UPCOMING %?\nCaptured: %U\nGist: \nSource: \n")
       ("s" "TV Show" entry
         (file+headline "~/Dropbox/org/lists.org" "TV Shows")
-        "* UPCOMING %?\nCaptured: %U\nGist: \nSource: \n"))))
+        "* UPCOMING %?\nCaptured: %U\nGist: \nSource: \n")
+      ("b" "Book" entry
+       (file+headline "~/Dropbox/org/lists.org" "Books")
+       "* UPCOMING %?\nCaptured: %U\nAuthor(s): \nGist: \nSource: \n"))))
 
 (defun dub/org-find-file ()
   "Quickly open a file in the org directory."
@@ -107,17 +110,42 @@
 ;; BEGIN: Uncategorized
 ;;;;
 (add-hook 'typescript-mode-hook 'prettier-js-mode)
+(add-hook 'typescript-mode-hook 'company-mode)
+(add-hook 'python-mode-hook 'company-mode)
 
-(defvar dub/olympus-env-dir "~/code/olympus/env")
+(defvar dub/olympus-env-dir "~/code/olympus/env/")
 (defun olympus-activate ()
   (interactive)
   (pyvenv-activate dub/olympus-env-dir)
   (setenv "VIRTUAL_ENV" dub/olympus-env-dir))
 
+(setq-hook! 'eshell-mode-hook company-idle-delay nil)
+
 (setq company-idle-delay 0)
 (setq company-minimum-prefix-length 1)
 (setq company-selection-wrap-around t)
 
+(after! doom-modeline
+  (setq doom-modeline-env-enable-python nil)
+  (setq doom-modeline-vcs-max-length 36)
+  (doom-modeline-def-modeline 'dub-modeline
+   '(bar buffer-info buffer-position)
+   '(major-mode process vcs checker))
+  (defun setup-custom-doom-modeline ()
+    (doom-modeline-set-modeline 'dub-modeline 'default))
+  (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
+
+(after! flycheck
+  (defun my/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
+  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules))
 (setq typescript-indent-level 2)
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 ;;;;
